@@ -5,9 +5,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: '*',
+  });
   const config = new DocumentBuilder()
     .setTitle('Senior API')
     .setDescription('API de integração com Senior ERP')
+    .addServer('http://localhost:3000')
+    .addServer('https://fritz-backend-production.up.railway.app')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
