@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 
 interface JwtPayload {
   username: string;
+  password: string;
 }
 
 @Injectable()
@@ -22,6 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   validate(payload: JwtPayload) {
     return {
       username: payload.username,
+      password: payload.password,
     };
   }
 }

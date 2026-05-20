@@ -12,7 +12,7 @@ import { SeniorModule } from '../senior/senior.module';
     PassportModule,
     SeniorModule,
     JwtModule.register({
-      secret: 'default-secret',
+      secret: process.env.JWT_SECRET || 'fritz_equipamentos_secret_key',
       signOptions: {
         expiresIn: '1d',
       },

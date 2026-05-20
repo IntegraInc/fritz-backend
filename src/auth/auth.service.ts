@@ -21,6 +21,7 @@ export class AuthService {
 
     const payload = {
       username,
+      password,
     };
     const expiresInSeconds = 60 * 60 * 24; // 1 dia
 
