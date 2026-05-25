@@ -44,4 +44,38 @@ export class SeniorController {
       });
     });
   }
+
+  @Get('tcp')
+  tcpTest() {
+    return new Promise((resolve) => {
+      const socket = new net.Socket();
+
+      socket.setTimeout(10000);
+
+      socket.connect(30181, 'webp20.seniorcloud.com.br', () => {
+        socket.destroy();
+
+        resolve({
+          success: true,
+          message: 'Porta aberta',
+        });
+      });
+
+      socket.on('timeout', () => {
+        socket.destroy();
+
+        resolve({
+          success: false,
+          message: 'Timeout',
+        });
+      });
+
+      socket.on('error', (err) => {
+        resolve({
+          success: false,
+          error: err.message,
+        });
+      });
+    });
+  }
 }
