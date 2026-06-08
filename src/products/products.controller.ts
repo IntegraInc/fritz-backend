@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -83,6 +91,7 @@ export class ProductsController {
   })
   @UseGuards(AuthGuard('jwt'))
   @Post('update')
+  @HttpCode(HttpStatus.OK)
   async putProducts(
     @CurrentUser() user: { username: string; password: string },
     @Body()

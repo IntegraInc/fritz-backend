@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { SeniorService } from '../senior/senior.service';
 import ProductResponse, {
   ProductServiceResponse,
@@ -63,25 +63,61 @@ export class ProductsService {
     company: string;
     products: ProductResponse[];
   }) {
-    const seniorProducts = products.map((product) => ({
-      code: product.code,
-      description: product.description,
-      average: product.average,
-      icms: product.icms,
-      externalComission: product.externalComission,
-      internalComission: product.internalComission,
-      freight: product.freight,
-      ipi: product.ipi,
-      profit: product.profit,
-      pis: product.pis,
-      cofins: product.cofins,
-    }));
+    try {
+      if (!products?.length) {
+        throw new BadRequestException('Nenhum produto informado');
+      }
 
-    return this.seniorService.putProducts({
-      username: username,
-      password: password,
-      company: company,
-      products: seniorProducts,
-    });
+      const seniorProducts = products.map((product) => ({
+        code: product.code || '',
+        description: product.description || '',
+        average: product.average || 0,
+        icms: product.icms || 0,
+        externalComission: product.externalComission || 0,
+        internalComission: product.internalComission || 0,
+        freight: product.freight || 0,
+        ipi: product.ipi || 0,
+        profit: product.profit || 0,
+        pis: product.pis || 0,
+        cofins: product.cofins || 0,
+      }));
+
+      const response = await this.seniorService.putProducts({
+        username,
+        password,
+        company,
+        products: seniorProducts,
+      });
+
+      if (!response.products?.length) {
+        throw new BadRequestException('' + response.erroExecucao);
+      }
+
+      return {
+        message: 'Produtos alterados com sucesso',
+        products: response.products.map((product) => ({
+          code: product.codpro,
+          description: product.despro,
+          average: Number(product.medpon),
+          icms: Number(product.pericm),
+          externalComission: Number(product.percoe),
+          internalComission: Number(product.percoi),
+          freight: Number(product.perfre),
+          ipi: Number(product.peripi),
+          profit: Number(product.perluc),
+          pis: Number(product.perpis),
+          cofins: Number(product.percof),
+        })),
+      };
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new BadRequestException({
+        message: 'Erro ao alterar produtos',
+        details: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
 }

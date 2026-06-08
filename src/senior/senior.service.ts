@@ -233,11 +233,11 @@ export class SeniorService {
 
     const result =
       parsed['S:Envelope']['S:Body']['ns2:alteraProdutosResponse']['result'];
-    console.log(result);
     return {
       products: this.ensureArray<SeniorProduct>(
         result.produtos?.produto ?? result.produtos,
       ),
+      erroExecucao: result.erroExecucao,
     };
   }
 }

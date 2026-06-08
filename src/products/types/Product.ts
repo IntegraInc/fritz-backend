@@ -18,4 +18,5 @@ export type SeniorProductResponse = {
   totalPages?: number;
   products: SeniorProduct[];
   totalRecords?: number;
+  erroExecucao?: string;
 };
