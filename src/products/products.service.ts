@@ -49,6 +49,9 @@ export class ProductsService {
         ipi: Number(product.peripi),
         profit: Number(product.perluc),
         pis: Number(product.perpis),
+        cofins: Number(product.percof),
+        familyCode: Number(product.codfam),
+        familyDescription: product.desfam,
       })),
     };
   }
@@ -80,6 +83,8 @@ export class ProductsService {
         profit: product.profit || 0,
         pis: product.pis || 0,
         cofins: product.cofins || 0,
+        familyCode: product.familyCode || 0,
+        familyDescription: product.familyDescription || '',
       }));
 
       const response = await this.seniorService.putProducts({
@@ -107,6 +112,8 @@ export class ProductsService {
           profit: Number(product.perluc),
           pis: Number(product.perpis),
           cofins: Number(product.percof),
+          familyCode: Number(product.codfam),
+          familyDescription: product.desfam,
         })),
       };
     } catch (error: unknown) {

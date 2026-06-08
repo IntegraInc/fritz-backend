@@ -12,6 +12,8 @@ export default interface ProductResponse {
   profit: number;
   pis: number;
   cofins?: number;
+  familyCode: number;
+  familyDescription: string;
 }
 
 export type ProductServiceResponse = {

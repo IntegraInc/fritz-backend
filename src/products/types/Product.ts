@@ -12,6 +12,8 @@ export default interface SeniorProduct {
   peripi: number;
   perluc: number;
   perpis: number;
+  codfam: number;
+  desfam: string;
 }
 
 export type SeniorProductResponse = {
