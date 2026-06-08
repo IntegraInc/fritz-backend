@@ -8,6 +8,7 @@ type ProductParameters = {
   username: string;
   password: string;
   company: string;
+  family: string;
   page: number;
   searchParameters: string;
   recordsPerPage: number;
@@ -19,6 +20,7 @@ export class ProductsService {
     username,
     password,
     company,
+    family,
     page,
     searchParameters,
     recordsPerPage,
@@ -27,14 +29,15 @@ export class ProductsService {
       username: username,
       password: password,
       company: company,
+      family: family,
       page: page,
       searchParameters: searchParameters,
       recordsPerPage: recordsPerPage,
     });
 
     return {
-      totalPages: response.totalPages,
-      totalRecords: response.totalRecords,
+      totalPages: response.totalPages || 1,
+      totalRecords: response.totalRecords || 0,
       products: response.products.map((product) => ({
         code: product.codpro,
         description: product.despro,
@@ -48,5 +51,37 @@ export class ProductsService {
         pis: Number(product.perpis),
       })),
     };
+  }
+  async putProducts({
+    username,
+    password,
+    company,
+    products,
+  }: {
+    username: string;
+    password: string;
+    company: string;
+    products: ProductResponse[];
+  }) {
+    const seniorProducts = products.map((product) => ({
+      code: product.code,
+      description: product.description,
+      average: product.average,
+      icms: product.icms,
+      externalComission: product.externalComission,
+      internalComission: product.internalComission,
+      freight: product.freight,
+      ipi: product.ipi,
+      profit: product.profit,
+      pis: product.pis,
+      cofins: product.cofins,
+    }));
+
+    return this.seniorService.putProducts({
+      username: username,
+      password: password,
+      company: company,
+      products: seniorProducts,
+    });
   }
 }

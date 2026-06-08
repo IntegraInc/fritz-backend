@@ -15,7 +15,7 @@ export default interface SeniorProduct {
 }
 
 export type SeniorProductResponse = {
-  totalPages: number;
+  totalPages?: number;
   products: SeniorProduct[];
-  totalRecords: number;
+  totalRecords?: number;
 };
