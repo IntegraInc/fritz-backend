@@ -12,7 +12,7 @@ async function bootstrap() {
     .setTitle('Senior API')
     .setDescription('API de integração com Senior ERP')
     .addServer('http://localhost:3000')
-    .addServer('https://fritz-backend-production.up.railway.app')
+    .addServer('https://fritz-backend.fly.dev')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -20,7 +20,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('docs', app, document);
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT') || 3000;
-  await app.listen(port);
+  // const port = configService.get<number>('PORT') || 3000;
+  await app.listen(8080);
 }
 bootstrap();
