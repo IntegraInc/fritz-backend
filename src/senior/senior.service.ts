@@ -136,7 +136,7 @@ export class SeniorService {
             <!--Optional:-->
             <pagina>${page}</pagina>
             <!--Optional:-->
-            <parametroPesquisa>${searchParameters}</parametroPesquisa>
+            <parametroPesquisa>${searchParameters || ''}</parametroPesquisa>
             <!--Optional:-->
             <registrosPorPagina>${recordsPerPage}</registrosPorPagina>
          </parameters>
