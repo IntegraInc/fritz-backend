@@ -195,6 +195,11 @@ export class SeniorService {
         <peripi>${product.ipi}</peripi>
         <perluc>${product.profit}</perluc>
         <perpis>${product.pis}</perpis>
+        <pericment>${product.inboundIcms}</pericment>
+        <perpicofent>${product.inboundCofinsAndPis}</perpicofent>
+        <peripient>${product.inboundIpi}</peripient>
+        <perfreent>${product.inboundFreight}</perfreent>
+        <cusfix>${product.fixedCoast}</cusfix>
       </produtos>
     `,
     );
