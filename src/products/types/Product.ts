@@ -4,7 +4,7 @@ export default interface SeniorProduct {
   codpro: string;
   despro: string;
   medpon: number;
-  pericm: number;
+  perIcm: number;
   percoe: number;
   percof: number;
   percoi: number;
@@ -14,6 +14,17 @@ export default interface SeniorProduct {
   perpis: number;
   codfam: number;
   desfam: string;
+  pericment: number;
+  perpicofent: number;
+  peripient: number;
+  perfreent: number;
+  cusfix: number;
+  prebas: number;
+  vlruen: number;
+  datuen: string;
+  datalt: string;
+  horalt: string;
+  usualt: string;
 }
 
 export type SeniorProductResponse = {

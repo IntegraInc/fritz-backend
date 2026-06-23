@@ -14,6 +14,17 @@ export default interface ProductResponse {
   cofins?: number;
   familyCode: number;
   familyDescription: string;
+  inboundIcms: number;
+  inboundCofinsAndPis: number;
+  inboundIpi: number;
+  inboundFreight: number;
+  fixedCoast: number;
+  basePrice?: number;
+  lastInboundPrice?: number;
+  lastInboundDate?: string;
+  lastUpdateDate?: string;
+  lastUpdateTime?: string;
+  lastUpdateUser?: string;
 }
 
 export type ProductServiceResponse = {

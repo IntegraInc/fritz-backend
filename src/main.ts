@@ -11,7 +11,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Senior API')
     .setDescription('API de integração com Senior ERP')
-    .addServer('http://localhost:3000')
+    .addServer('http://localhost:8080')
     .addServer('https://fritz-backend.fly.dev')
     .setVersion('1.0')
     .addBearerAuth()
