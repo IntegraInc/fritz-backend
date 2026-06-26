@@ -19,6 +19,7 @@ import {
 } from '@nestjs/swagger';
 import SeniorProduct from './types/Product';
 import ProductResponse from './types/ProductResponse';
+import PromotionRequest from './types/PromotionRequest';
 @ApiTags('Products')
 @ApiBearerAuth()
 @Controller('products')
@@ -148,6 +149,186 @@ export class ProductsController {
       username: user.username,
       password: user.password,
       company: body.company,
+      products: body.products,
+    });
+  }
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        company: { type: 'string', default: '1' },
+        tablePrice: { type: 'string', default: '001' },
+        initialDate: { type: 'string', default: '29/05/2026' },
+        products: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              code: { type: 'string', default: 'PROD001' },
+              average: { type: 'number', default: 10 },
+              icms: { type: 'number', default: 18 },
+              externalComission: { type: 'number', default: 5 },
+              internalComission: { type: 'number', default: 3 },
+              freight: { type: 'number', default: 2 },
+              ipi: { type: 'number', default: 4 },
+              profit: { type: 'number', default: 20 },
+              pis: { type: 'number', default: 1 },
+              cofins: { type: 'number', default: 2 },
+              inboundIcms: { type: 'number', default: 0 },
+              inboundCofinsAndPis: { type: 'number', default: 0 },
+              inboundIpi: { type: 'number', default: 0 },
+              inboundFreight: { type: 'number', default: 0 },
+              fixedCoast: { type: 'number', default: 0 },
+              basePrice: { type: 'number', default: 0 },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Cria simulação de promoção',
+  })
+  // @ApiResponse({
+  //   schema: {
+  //     type: 'object',
+  //     properties: {
+  //       products: {
+  //         type: 'array',
+  //         items: {
+  //           type: 'object',
+  //           properties: {
+  //             code: { type: 'string', default: 'PROD001' },
+  //             description: { type: 'string', default: 'Product 1' },
+  //             average: { type: 'number', default: 10 },
+  //             icms: { type: 'number', default: 18 },
+  //             externalComission: { type: 'number', default: 5 },
+  //             internalComission: { type: 'number', default: 3 },
+  //             freight: { type: 'number', default: 2 },
+  //             ipi: { type: 'number', default: 4 },
+  //             profit: { type: 'number', default: 20 },
+  //             pis: { type: 'number', default: 1 },
+  //             cofins: { type: 'number', default: 2 },
+  //             inboundIcms: { type: 'number', default: 0 },
+  //             inboundCofinsAndPis: { type: 'number', default: 0 },
+  //             inboundIpi: { type: 'number', default: 0 },
+  //             inboundFreight: { type: 'number', default: 0 },
+  //             fixedCoast: { type: 'number', default: 0 },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // })
+  @UseGuards(AuthGuard('jwt'))
+  @Post('promotion')
+  @HttpCode(HttpStatus.OK)
+  async postPromotionSimulation(
+    @CurrentUser() user: { username: string; password: string },
+    @Body()
+    body: {
+      company: string;
+      tablePrice: string;
+      initialDate: string;
+      products: PromotionRequest[];
+    },
+  ) {
+    return this.productsService.postSimulationPromotion({
+      username: user.username,
+      password: user.password,
+      company: body.company,
+      tablePrice: body.tablePrice,
+      initialDate: body.initialDate,
+      products: body.products,
+    });
+  }
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        company: { type: 'string', default: '1' },
+        tablePrice: { type: 'string', default: '001' },
+        initialDate: { type: 'string', default: '29/05/2026' },
+        products: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              code: { type: 'string', default: 'PROD001' },
+              average: { type: 'number', default: 10 },
+              icms: { type: 'number', default: 18 },
+              externalComission: { type: 'number', default: 5 },
+              internalComission: { type: 'number', default: 3 },
+              freight: { type: 'number', default: 2 },
+              ipi: { type: 'number', default: 4 },
+              profit: { type: 'number', default: 20 },
+              pis: { type: 'number', default: 1 },
+              cofins: { type: 'number', default: 2 },
+              inboundIcms: { type: 'number', default: 0 },
+              inboundCofinsAndPis: { type: 'number', default: 0 },
+              inboundIpi: { type: 'number', default: 0 },
+              inboundFreight: { type: 'number', default: 0 },
+              fixedCoast: { type: 'number', default: 0 },
+              basePrice: { type: 'number', default: 0 },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Efetiva a promoção simulada',
+  })
+  // @ApiResponse({
+  //   schema: {
+  //     type: 'object',
+  //     properties: {
+  //       products: {
+  //         type: 'array',
+  //         items: {
+  //           type: 'object',
+  //           properties: {
+  //             code: { type: 'string', default: 'PROD001' },
+  //             description: { type: 'string', default: 'Product 1' },
+  //             average: { type: 'number', default: 10 },
+  //             icms: { type: 'number', default: 18 },
+  //             externalComission: { type: 'number', default: 5 },
+  //             internalComission: { type: 'number', default: 3 },
+  //             freight: { type: 'number', default: 2 },
+  //             ipi: { type: 'number', default: 4 },
+  //             profit: { type: 'number', default: 20 },
+  //             pis: { type: 'number', default: 1 },
+  //             cofins: { type: 'number', default: 2 },
+  //             inboundIcms: { type: 'number', default: 0 },
+  //             inboundCofinsAndPis: { type: 'number', default: 0 },
+  //             inboundIpi: { type: 'number', default: 0 },
+  //             inboundFreight: { type: 'number', default: 0 },
+  //             fixedCoast: { type: 'number', default: 0 },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // })
+  @UseGuards(AuthGuard('jwt'))
+  @Post('assignment')
+  @HttpCode(HttpStatus.OK)
+  async postAssignPromotion(
+    @CurrentUser() user: { username: string; password: string },
+    @Body()
+    body: {
+      company: string;
+      tablePrice: string;
+      initialDate: string;
+      products: PromotionRequest[];
+    },
+  ) {
+    return this.productsService.assignPromotion({
+      username: user.username,
+      password: user.password,
+      company: body.company,
+      tablePrice: body.tablePrice,
+      initialDate: body.initialDate,
       products: body.products,
     });
   }

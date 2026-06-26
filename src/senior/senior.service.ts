@@ -7,6 +7,9 @@ import SeniorProduct, {
   SeniorProductResponse,
 } from '../products/types/Product';
 import ProductResponse from '../products/types/ProductResponse';
+import PromotionRequest, {
+  PromotionResponse,
+} from '../products/types/PromotionRequest';
 
 @Injectable()
 export class SeniorService {
@@ -242,6 +245,230 @@ export class SeniorService {
       products: this.ensureArray<SeniorProduct>(
         result.produtos?.produto ?? result.produtos,
       ),
+      erroExecucao: result.erroExecucao,
+    };
+  }
+  async postSimulationPromotion({
+    username,
+    password,
+    company,
+    tablePrice,
+    initialDate,
+    products,
+  }: {
+    username: string;
+    password: string;
+    company: string;
+    tablePrice: string;
+    initialDate: string;
+    products: PromotionRequest[];
+  }): Promise<PromotionResponse> {
+    const authUrl = this.configService.getOrThrow<string>('SENIOR_SOAP_URL');
+    const productsXml = products.map(
+      (product) => `
+      <produtos>
+        <codpro>${product.code}</codpro>
+        <medpon>${product.average}</medpon>
+        <pericm>${product.icms}</pericm>
+        <percoe>${product.externalComission}</percoe>
+        <percof>${product.cofins}</percof>
+        <percoi>${product.internalComission}</percoi>
+        <perfre>${product.freight}</perfre>
+        <peripi>${product.ipi}</peripi>
+        <perluc>${product.profit}</perluc>
+        <perpis>${product.pis}</perpis>
+        <cusfix>${product.fixedCoast}</cusfix>
+        <icment>${product.inboundIcms}</icment>
+        <ipient>${product.inboundIpi}</ipient>
+        <pccent>${product.inboundCofinsAndPis}</pccent>
+        <freent>${product.inboundFreight}</freent>
+        <prebas>${product.basePrice}</prebas>
+      </produtos>
+    `,
+    );
+
+    // Implementation for user validation
+    const xml = `
+   <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://services.senior.com.br">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:criarSimulacaoPromocao>
+         <user>${username}</user>
+         <password>${password}</password>
+         <encryption>0</encryption>
+         <parameters>
+            <codemp>${company}</codemp>
+            <codtpr>${tablePrice}</codtpr>
+            <datini>${initialDate}</datini>
+              ${productsXml}
+         </parameters>
+      </ser:criarSimulacaoPromocao>
+   </soapenv:Body>
+</soapenv:Envelope>
+    `;
+    const response = await firstValueFrom(
+      this.httpService.post(authUrl, xml, {
+        headers: {
+          'Content-Type': 'text/xml;charset=UTF-8',
+          SOAPAction: '',
+        },
+      }),
+    );
+    const data = response.data as string;
+    // const match = data.match(/<pmLogged>(.*?)<\/pmLogged>/);
+    const parsed = await parseStringPromise(data, {
+      explicitArray: false,
+      ignoreAttrs: true,
+    });
+
+    const result =
+      parsed['S:Envelope']['S:Body']['ns2:criarSimulacaoPromocaoResponse'][
+        'result'
+      ];
+    return {
+      retorno: result.retorno,
+      erroExecucao: result.erroExecucao,
+    };
+  }
+  async postTablePriceValidate({
+    username,
+    password,
+    company,
+    tablePrice,
+    initialDate,
+    finalDate,
+  }: {
+    username: string;
+    password: string;
+    company: string;
+    tablePrice: string;
+    initialDate: string;
+    finalDate: string;
+  }): Promise<{}> {
+    const authUrl = this.configService.getOrThrow<string>('SENIOR_SOAP_URL');
+
+    // Implementation for user validation
+    const xml = `
+   <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://services.senior.com.br">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:criarValidadeTabelaPreco>
+         <user>${username}</user>
+         <password>${password}</password>
+         <encryption>0</encryption>
+         <parameters>
+            <codemp>${company}</codemp>
+            <codtpr>${tablePrice}</codtpr>
+            <datini>${initialDate}</datini>
+            <datfim>${finalDate}</datfim>
+         </parameters>
+      </ser:criarValidadeTabelaPreco>
+   </soapenv:Body>
+</soapenv:Envelope>
+    `;
+    const response = await firstValueFrom(
+      this.httpService.post(authUrl, xml, {
+        headers: {
+          'Content-Type': 'text/xml;charset=UTF-8',
+          SOAPAction: '',
+        },
+      }),
+    );
+    const data = response.data as string;
+    // const match = data.match(/<pmLogged>(.*?)<\/pmLogged>/);
+    const parsed = await parseStringPromise(data, {
+      explicitArray: false,
+      ignoreAttrs: true,
+    });
+
+    const result =
+      parsed['S:Envelope']['S:Body']['ns2:criarValidadeTabelaPrecoResponse'][
+        'result'
+      ];
+    return {
+      retorno: result.retorno,
+      erroExecucao: result.erroExecucao,
+    };
+  }
+  async assignPromotion({
+    username,
+    password,
+    company,
+    tablePrice,
+    initialDate,
+    products,
+  }: {
+    username: string;
+    password: string;
+    company: string;
+    tablePrice: string;
+    initialDate: string;
+    products: PromotionRequest[];
+  }): Promise<PromotionResponse> {
+    const authUrl = this.configService.getOrThrow<string>('SENIOR_SOAP_URL');
+    const productsXml = products.map(
+      (product) => `
+      <produtos>
+        <codpro>${product.code}</codpro>
+        <medpon>${product.average}</medpon>
+        <pericm>${product.icms}</pericm>
+        <percoe>${product.externalComission}</percoe>
+        <percof>${product.cofins}</percof>
+        <percoi>${product.internalComission}</percoi>
+        <perfre>${product.freight}</perfre>
+        <peripi>${product.ipi}</peripi>
+        <perluc>${product.profit}</perluc>
+        <perpis>${product.pis}</perpis>
+        <cusfix>${product.fixedCoast}</cusfix>
+        <icment>${product.inboundIcms}</icment>
+        <ipient>${product.inboundIpi}</ipient>
+        <pccent>${product.inboundCofinsAndPis}</pccent>
+        <freent>${product.inboundFreight}</freent>
+        <prebas>${product.basePrice}</prebas>
+      </produtos>
+    `,
+    );
+
+    // Implementation for user validation
+    const xml = `
+   <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://services.senior.com.br">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:efetivaSimulacaoPromocao>
+         <user>${username}</user>
+         <password>${password}</password>
+         <encryption>0</encryption>
+         <parameters>
+            <codemp>${company}</codemp>
+            <codtpr>${tablePrice}</codtpr>
+            <datini>${initialDate}</datini>
+              ${productsXml}
+         </parameters>
+      </ser:efetivaSimulacaoPromocao>
+   </soapenv:Body>
+</soapenv:Envelope>
+    `;
+    const response = await firstValueFrom(
+      this.httpService.post(authUrl, xml, {
+        headers: {
+          'Content-Type': 'text/xml;charset=UTF-8',
+          SOAPAction: '',
+        },
+      }),
+    );
+    const data = response.data as string;
+    // const match = data.match(/<pmLogged>(.*?)<\/pmLogged>/);
+    const parsed = await parseStringPromise(data, {
+      explicitArray: false,
+      ignoreAttrs: true,
+    });
+
+    const result =
+      parsed['S:Envelope']['S:Body']['ns2:efetivaSimulacaoPromocaoResponse'][
+        'result'
+      ];
+    return {
+      retorno: result.retorno,
       erroExecucao: result.erroExecucao,
     };
   }
