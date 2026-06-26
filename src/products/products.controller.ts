@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
@@ -13,7 +14,9 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -330,6 +333,159 @@ export class ProductsController {
       tablePrice: body.tablePrice,
       initialDate: body.initialDate,
       products: body.products,
+    });
+  }
+  @ApiOperation({
+    summary: 'Pesquisar produtos com base em parâmetros de busca e paginação',
+  })
+  @ApiQuery({ name: 'company', required: true, type: String, example: '1' })
+  @ApiQuery({
+    name: 'tablePrice',
+    required: true,
+    type: String,
+    example: '001',
+  })
+  @ApiQuery({
+    name: 'initialDate',
+    required: true,
+    type: String,
+    example: '29/05/2026',
+  })
+  @ApiQuery({ name: 'family', required: false, type: String, example: '100' })
+  @ApiQuery({
+    name: 'searchParameters',
+    required: false,
+    type: String,
+    example: 'code, description or family',
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({
+    name: 'recordsPerPage',
+    required: false,
+    type: Number,
+    example: 50,
+  })
+  @ApiOkResponse({
+    description: 'Lista de produtos para promoção.',
+    schema: {
+      type: 'object',
+      properties: {
+        totalPages: {
+          type: 'number',
+          example: 1,
+        },
+        totalRecords: {
+          type: 'number',
+          example: 7,
+        },
+        products: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              code: {
+                type: 'string',
+                example: '11129',
+              },
+              description: {
+                type: 'string',
+                example:
+                  'PROLONGADOR P/ REGISTRO ABS CR DECA 20MM (160105-212) (BLUKIT)',
+              },
+              average: {
+                type: 'number',
+                example: 30,
+              },
+              icms: {
+                type: 'number',
+                example: 18,
+              },
+              externalComission: {
+                type: 'number',
+                example: 5,
+              },
+              internalComission: {
+                type: 'number',
+                example: 3,
+              },
+              freight: {
+                type: 'number',
+                example: 2,
+              },
+              ipi: {
+                type: 'number',
+                example: 4,
+              },
+              profit: {
+                type: 'number',
+                example: 20,
+              },
+              pis: {
+                type: 'number',
+                example: 1,
+              },
+              cofins: {
+                type: 'number',
+                example: 2,
+              },
+              familyCode: {
+                type: 'number',
+                example: 1189,
+              },
+              familyDescription: {
+                type: 'string',
+                example: 'BLUKIT METALURGICA (ROBSON 1)',
+              },
+              inboundIcms: {
+                type: 'number',
+                example: 0,
+              },
+              inboundCofinsAndPis: {
+                type: 'number',
+                example: 0,
+              },
+              inboundIpi: {
+                type: 'number',
+                example: 0,
+              },
+              inboundFreight: {
+                type: 'number',
+                example: 0,
+              },
+              fixedCoast: {
+                type: 'number',
+                example: 0,
+              },
+              basePrice: {
+                type: 'number',
+                example: 30,
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @UseGuards(AuthGuard('jwt'))
+  @Get('findPromotions')
+  @HttpCode(HttpStatus.OK)
+  async getPromotions(
+    @CurrentUser() user: { username: string; password: string },
+    @Query()
+    query: {
+      company: string;
+      family: string;
+      tablePrice: string;
+      initialDate: string;
+      searchParameters: string;
+      page: number;
+      recordsPerPage: number;
+    },
+  ) {
+    return this.productsService.getPromotions({
+      username: user.username,
+      password: user.password,
+      ...query,
     });
   }
 }

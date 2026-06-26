@@ -4,6 +4,10 @@ import ProductResponse, {
   ProductServiceResponse,
 } from './types/ProductResponse';
 import PromotionRequest from './types/PromotionRequest';
+import PromotionProductsSeniorArray, {
+  PromotionProductsApi,
+  PromotionProductsApiArray,
+} from './types/Promotion';
 
 type ProductParameters = {
   username: string;
@@ -284,5 +288,66 @@ export class ProductsService {
         details: error instanceof Error ? error.message : String(error),
       });
     }
+  }
+  async getPromotions({
+    username,
+    password,
+    company,
+    family,
+    tablePrice,
+    initialDate,
+    page,
+    searchParameters,
+    recordsPerPage,
+  }: {
+    username: string;
+    password: string;
+    company: string;
+    family: string;
+    tablePrice: string;
+    initialDate: string;
+    page: number;
+    searchParameters: string;
+    recordsPerPage: number;
+  }): Promise<PromotionProductsApi> {
+    const response = await this.seniorService.getPromotions({
+      username: username,
+      password: password,
+      company: company,
+      family: family,
+      tablePrice: tablePrice,
+      initialDate: initialDate,
+      page: page,
+      searchParameters: searchParameters,
+      recordsPerPage: recordsPerPage,
+    });
+
+    return {
+      totalPages: response.totalPaginas || 1,
+      totalRecords: response.totalRegistros || 0,
+      products: response.produtos.map(
+        (product: PromotionProductsSeniorArray) => ({
+          code: product.codpro,
+          description: product.despro,
+          average: Number(product.medpon),
+          icms: Number(product.pericm),
+          externalComission: Number(product.percoe),
+          internalComission: Number(product.percoi),
+          freight: Number(product.perfre),
+          ipi: Number(product.peripi),
+          profit: Number(product.perluc),
+          pis: Number(product.perpis),
+          cofins: Number(product.percof),
+          familyCode: Number(product.codfam),
+          familyDescription: product.desfam,
+          inboundIcms: Number(product.icment),
+          inboundCofinsAndPis: Number(product.pccent),
+          inboundIpi: Number(product.ipient),
+          inboundFreight: Number(product.freent),
+          fixedCoast: Number(product.cusfix),
+          basePrice: Number(product.prebas),
+        }),
+      ),
+    };
   }
 }

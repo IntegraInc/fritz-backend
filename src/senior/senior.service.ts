@@ -10,6 +10,10 @@ import ProductResponse from '../products/types/ProductResponse';
 import PromotionRequest, {
   PromotionResponse,
 } from '../products/types/PromotionRequest';
+import PromotionProducts, {
+  PromotionProductsSenior,
+} from '../products/types/Promotion';
+import PromotionProductsSeniorArray from '../products/types/Promotion';
 
 @Injectable()
 export class SeniorService {
@@ -469,6 +473,79 @@ export class SeniorService {
       ];
     return {
       retorno: result.retorno,
+      erroExecucao: result.erroExecucao,
+    };
+  }
+  async getPromotions({
+    username,
+    password,
+    company,
+    family,
+    tablePrice,
+    initialDate,
+    page,
+    searchParameters,
+    recordsPerPage,
+  }: {
+    username: string;
+    password: string;
+    company: string;
+    family: string;
+    tablePrice: string;
+    initialDate: string;
+    page: number;
+    searchParameters: string;
+    recordsPerPage: number;
+  }): Promise<PromotionProductsSenior> {
+    const authUrl = this.configService.getOrThrow<string>('SENIOR_SOAP_URL');
+
+    // Implementation for user validation
+    const xml = `
+   <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://services.senior.com.br">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:buscarSimulacaoPromocao>
+         <user>${username}</user>
+         <password>${password}</password>
+         <encryption>0</encryption>
+         <parameters>
+            <codemp>${company}</codemp>
+            <codtpr>${tablePrice}</codtpr>
+            <datini>${initialDate}</datini>
+            <codfam>${family || ''}</codfam>
+            <parametroPesquisa>${searchParameters || ''}</parametroPesquisa>
+            <pagina>${page}</pagina>
+            <registrosPorPagina>${recordsPerPage}</registrosPorPagina>
+         </parameters>
+      </ser:buscarSimulacaoPromocao>
+   </soapenv:Body>
+</soapenv:Envelope>
+    `;
+    const response = await firstValueFrom(
+      this.httpService.post(authUrl, xml, {
+        headers: {
+          'Content-Type': 'text/xml;charset=UTF-8',
+          SOAPAction: '',
+        },
+      }),
+    );
+    const data = response.data as string;
+    // const match = data.match(/<pmLogged>(.*?)<\/pmLogged>/);
+    const parsed = await parseStringPromise(data, {
+      explicitArray: false,
+      ignoreAttrs: true,
+    });
+
+    const result =
+      parsed['S:Envelope']['S:Body']['ns2:buscarSimulacaoPromocaoResponse'][
+        'result'
+      ];
+    return {
+      produtos: this.ensureArray<PromotionProductsSeniorArray>(
+        result.produtos?.produto ?? result.produtos,
+      ),
+      totalPaginas: Number(result.totalPaginas ?? 0),
+      totalRegistros: Number(result.totalRegistros ?? 0),
       erroExecucao: result.erroExecucao,
     };
   }
