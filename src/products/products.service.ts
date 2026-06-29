@@ -8,6 +8,7 @@ import PromotionProductsSeniorArray, {
   PromotionProductsApi,
   PromotionProductsApiArray,
 } from './types/Promotion';
+import DeletePromotionRequest from './types/DeletePromotion';
 
 type ProductParameters = {
   username: string;
@@ -349,5 +350,57 @@ export class ProductsService {
         }),
       ),
     };
+  }
+  async deletePromotion({
+    username,
+    password,
+    company,
+    tablePrice,
+    initialDate,
+    products,
+  }: {
+    username: string;
+    password: string;
+    company: string;
+    tablePrice: string;
+    initialDate: string;
+    products: DeletePromotionRequest[];
+  }) {
+    try {
+      if (!products?.length) {
+        throw new BadRequestException('Nenhum produto informado');
+      }
+
+      const seniorProducts = products.map((product) => ({
+        code: product.code || '',
+      }));
+
+      const response = await this.seniorService.deletePromotion({
+        username,
+        password,
+        company,
+        tablePrice,
+        initialDate,
+        products: seniorProducts,
+      });
+
+      if (response.retorno !== 'OK') {
+        throw new BadRequestException('' + response.erroExecucao);
+      }
+
+      return {
+        message: 'Promoção deletada com sucesso',
+        products: seniorProducts,
+      };
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new BadRequestException({
+        message: 'Erro ao criar simulação de produtos',
+        details: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
 }

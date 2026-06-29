@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -23,6 +24,7 @@ import {
 import SeniorProduct from './types/Product';
 import ProductResponse from './types/ProductResponse';
 import PromotionRequest from './types/PromotionRequest';
+import DeletePromotionRequest from './types/DeletePromotion';
 @ApiTags('Products')
 @ApiBearerAuth()
 @Controller('products')
@@ -486,6 +488,50 @@ export class ProductsController {
       username: user.username,
       password: user.password,
       ...query,
+    });
+  }
+  @ApiOperation({
+    summary: 'Deletar produtos que foram simulados para promoção',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        company: { type: 'string', default: '1' },
+        tablePrice: { type: 'string', default: '001' },
+        initialDate: { type: 'string', default: '29/05/2026' },
+        products: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              code: { type: 'string', default: 'PROD001' },
+            },
+          },
+        },
+      },
+    },
+  })
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('promotion')
+  @HttpCode(HttpStatus.OK)
+  async deletePromotion(
+    @CurrentUser() user: { username: string; password: string },
+    @Body()
+    body: {
+      company: string;
+      tablePrice: string;
+      initialDate: string;
+      products: DeletePromotionRequest[];
+    },
+  ) {
+    return this.productsService.deletePromotion({
+      username: user.username,
+      password: user.password,
+      company: body.company,
+      tablePrice: body.tablePrice,
+      initialDate: body.initialDate,
+      products: body.products,
     });
   }
 }
