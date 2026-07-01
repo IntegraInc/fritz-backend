@@ -19,6 +19,7 @@ export default interface SeniorProduct {
   peripient: number;
   perfreent: number;
   cusfix: number;
+  vlruep: number;
   prebas: number;
   vlruen: number;
   datuen: string;

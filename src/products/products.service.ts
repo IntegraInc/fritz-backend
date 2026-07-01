@@ -65,6 +65,7 @@ export class ProductsService {
         inboundFreight: Number(product.perfreent),
         fixedCoast: Number(product.cusfix),
         basePrice: Number(product.prebas),
+        inboundInvoicePrice: Number(product.vlruep),
         lastInboundPrice: Number(product.vlruen),
         lastInboundDate: product.datuen,
         lastUpdateDate: product.datalt,

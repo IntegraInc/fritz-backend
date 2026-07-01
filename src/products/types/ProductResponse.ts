@@ -19,6 +19,7 @@ export default interface ProductResponse {
   inboundIpi: number;
   inboundFreight: number;
   fixedCoast: number;
+  inboundInvoicePrice?: number;
   basePrice?: number;
   lastInboundPrice?: number;
   lastInboundDate?: string;
