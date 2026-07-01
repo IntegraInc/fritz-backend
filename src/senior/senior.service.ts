@@ -17,6 +17,7 @@ import PromotionProductsSeniorArray from '../products/types/Promotion';
 import DeletePromotionRequest, {
   DeletePromotionResponse,
 } from '../products/types/DeletePromotion';
+import { PromotionParametersSenior } from '../products/types/PromotionParameters';
 
 @Injectable()
 export class SeniorService {
@@ -618,5 +619,55 @@ export class SeniorService {
       retorno: result.retorno,
       erroExecucao: result.erroExecucao,
     };
+  }
+  async getPromotionParameters(
+    username: string,
+    password: string,
+    company: string,
+  ): Promise<PromotionParametersSenior> {
+    const authUrl = this.configService.getOrThrow<string>('SENIOR_SOAP_URL');
+
+    const xml = `
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://services.senior.com.br">
+  <soapenv:Header/>
+  <soapenv:Body>
+    <ser:buscarSimulacaoPromocaoParametros>
+      <user>${username}</user>
+      <password>${password}</password>
+      <encryption>0</encryption>
+      <parameters>
+        <codemp>${company}</codemp>
+      </parameters>
+    </ser:buscarSimulacaoPromocaoParametros>
+  </soapenv:Body>
+</soapenv:Envelope>
+`;
+
+    const response = await firstValueFrom(
+      this.httpService.post(authUrl, xml, {
+        headers: {
+          'Content-Type': 'text/xml;charset=UTF-8',
+          SOAPAction: '',
+        },
+      }),
+    );
+
+    const data = response.data as string;
+
+    const parsed = await parseStringPromise(data, {
+      explicitArray: false,
+      ignoreAttrs: true,
+    });
+
+    const retorno =
+      parsed['S:Envelope']?.['S:Body']?.[
+        'ns2:buscarSimulacaoPromocaoParametrosResponse'
+      ]?.['result']?.['retorno'];
+
+    if (!retorno) {
+      return [];
+    }
+
+    return Array.isArray(retorno) ? retorno : [retorno];
   }
 }

@@ -9,6 +9,7 @@ import PromotionProductsSeniorArray, {
   PromotionProductsApiArray,
 } from './types/Promotion';
 import DeletePromotionRequest from './types/DeletePromotion';
+import { PromotionParametersApi } from './types/PromotionParameters';
 
 type ProductParameters = {
   username: string;
@@ -402,5 +403,35 @@ export class ProductsService {
         details: error instanceof Error ? error.message : String(error),
       });
     }
+  }
+  async getPromotionParameters({
+    username,
+    password,
+    company,
+  }: {
+    username: string;
+    password: string;
+    company: string;
+  }): Promise<PromotionParametersApi> {
+    const response = await this.seniorService.getPromotionParameters(
+      username,
+      password,
+      company,
+    );
+
+    return {
+      response: response.map((param) => {
+        const vencimentos = Array.isArray(param.vencimentos)
+          ? param.vencimentos
+          : [param.vencimentos];
+
+        return {
+          tablePrice: param.codtpr,
+          dueDates: vencimentos.map((dueDate) => ({
+            initialDate: dueDate.datini,
+          })),
+        };
+      }),
+    };
   }
 }

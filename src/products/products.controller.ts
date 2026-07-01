@@ -534,4 +534,50 @@ export class ProductsController {
       products: body.products,
     });
   }
+  @ApiOperation({
+    summary: 'Obter parâmetros de promoção',
+  })
+  @ApiQuery({ name: 'company', required: true, type: String, example: '1' })
+  @ApiOkResponse({
+    description: 'Retorno',
+    schema: {
+      type: 'object',
+      properties: {
+        response: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              tablePrice: { type: 'string', example: '001' },
+              dueDates: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    initialDate: { type: 'string', example: '29/05/2026' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @UseGuards(AuthGuard('jwt'))
+  @Get('findPromotionParameters')
+  @HttpCode(HttpStatus.OK)
+  async getPromotionParameters(
+    @CurrentUser() user: { username: string; password: string },
+    @Query()
+    query: {
+      company: string;
+    },
+  ) {
+    return this.productsService.getPromotionParameters({
+      username: user.username,
+      password: user.password,
+      company: query.company,
+    });
+  }
 }
