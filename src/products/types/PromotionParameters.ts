@@ -1,5 +1,6 @@
 type DueDatesSenior = {
   datini: string;
+  datfim: string;
 };
 
 type PromotionParameterSenior = {
@@ -11,6 +12,7 @@ export type PromotionParametersSenior = PromotionParameterSenior[];
 
 type DueDatesArray = {
   initialDate: string;
+  finalDate: string;
 };
 
 type PromotionParametersArray = {

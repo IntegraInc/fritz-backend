@@ -430,6 +430,7 @@ export class ProductsService {
           tablePrice: param.codtpr,
           dueDates: vencimentos.map((dueDate) => ({
             initialDate: dueDate.datini,
+            finalDate: dueDate.datfim,
           })),
         };
       }),
